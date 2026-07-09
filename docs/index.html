@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RingHost — an AI receptionist that answers your restaurant's phone</title>
+<meta name="description" content="Never miss a call again. RingHost answers your restaurant's phone, handles common questions, and books tables — 24/7, for a flat monthly fee.">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --cream: #faf7f2;
+    --amber: #c97a3c;
+    --line: #e8e0d4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  header {
+    padding: 5rem 1.5rem 4rem;
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 2.6rem;
+    line-height: 1.15;
+    margin: 0 0 1rem;
+  }
+  .sub {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 2rem;
+  }
+  .cta {
+    display: inline-block;
+    background: var(--amber);
+    color: white;
+    padding: 0.9rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  .cta:hover { opacity: 0.9; }
+  section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .card h3 { margin-top: 0; font-size: 1.05rem; }
+  .card p { color: #555; font-size: 0.95rem; margin-bottom: 0; }
+  .price {
+    text-align: center;
+  }
+  .price .amount { font-size: 3rem; font-weight: 700; }
+  .price .per { color: #777; }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  input {
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  button {
+    background: var(--ink);
+    color: white;
+    border: none;
+    padding: 0.9rem;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  footer {
+    text-align: center;
+    padding: 2rem 1.5rem 3rem;
+    color: #999;
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Your restaurant's phone, answered every time.</h1>
+  <p class="sub">RingHost is an AI receptionist that sounds like a real person — it answers hours and menu questions, and books tables straight to your phone. Your staff stays on the floor, not on hold.</p>
+  <a class="cta" href="#signup">Get a free sample call</a>
+</header>
+
+<section>
+  <div class="cards">
+    <div class="card">
+      <h3>Answers instantly</h3>
+      <p>No more missed calls during a dinner rush. Every call gets picked up, day or night.</p>
+    </div>
+    <div class="card">
+      <h3>Books directly</h3>
+      <p>Party size, date, time, name — confirmed on the call, texted to your phone the moment it's booked.</p>
+    </div>
+    <div class="card">
+      <h3>Knows your restaurant</h3>
+      <p>Hours, menu highlights, and policies — trained on your real information, not a generic script.</p>
+    </div>
+    <div class="card">
+      <h3>Hands off the hard stuff</h3>
+      <p>Allergies, complaints, anything it shouldn't guess at — it takes a message and a manager calls back within the hour.</p>
+    </div>
+  </div>
+</section>
+
+<section class="price">
+  <div class="amount">$500<span class="per">/mo</span></div>
+  <p>Flat monthly fee. No setup cost for a free sample call first — hear it before you decide.</p>
+</section>
+
+<section id="signup">
+  <h2 style="text-align:center;">Want to hear it on your own restaurant's info?</h2>
+  <form action="mailto:s0533495227@gmail.com" method="post" enctype="text/plain">
+    <input type="text" name="restaurant_name" placeholder="Restaurant name" required>
+    <input type="tel" name="phone" placeholder="Phone number" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <button type="submit">Request a free sample call</button>
+  </form>
+  <p style="text-align:center; color:#999; font-size:0.85rem; margin-top:1rem;">No commitment. We'll call you back with a working demo built around your restaurant.</p>
+</section>
+
+<footer>
+  RingHost — built by Shimon Deitel
+</footer>
+
+</body>
+</html>
