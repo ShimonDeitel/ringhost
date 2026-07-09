@@ -68,10 +68,12 @@
     <textarea name="menu_highlights" placeholder="A few signature dishes"></textarea>
 
     <label>Restaurant's own phone (for reference/records)</label>
-    <input name="restaurant_phone" placeholder="+972...">
+    <input name="restaurant_phone" placeholder="050-1234567">
+    <p class="hint">Just the local number (e.g. 050-1234567) — Israel's +972 is added automatically.</p>
 
     <label>Your phone (shown on the dashboard as the contact)</label>
-    <input name="owner_phone" placeholder="+972501234567" required>
+    <input name="owner_phone" placeholder="050-1234567" required>
+    <p class="hint">Same here — no need to type +972 yourself.</p>
 
     <button type="submit">Create the assistant</button>
   </form>
@@ -95,6 +97,19 @@
   const dashLink = document.getElementById("dashboard-link");
   const mapsQueryEl = document.getElementById("maps_query");
 
+  // Auto-adds Israel's +972 to a local number (e.g. "050-1234567" or
+  // "0501234567" -> "+972501234567"). Leaves already-international numbers
+  // (starting with +) untouched.
+  function toIsraeliE164(raw) {
+    if (!raw) return raw;
+    const trimmed = raw.trim();
+    if (trimmed.startsWith("+")) return trimmed.replace(/[\s-]/g, "");
+    const digits = trimmed.replace(/[\s-]/g, "");
+    if (digits.startsWith("972")) return "+" + digits;
+    if (digits.startsWith("0")) return "+972" + digits.slice(1);
+    return "+972" + digits;
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     errEl.textContent = "";
@@ -106,6 +121,8 @@
     const data = Object.fromEntries(new FormData(form).entries());
     data.languages = Array.from(form.querySelectorAll('input[name="languages"]:checked')).map(c => c.value);
     if (mapsQueryEl.value.trim()) data.google_maps_query = mapsQueryEl.value.trim();
+    if (data.owner_phone) data.owner_phone = toIsraeliE164(data.owner_phone);
+    if (data.restaurant_phone) data.restaurant_phone = toIsraeliE164(data.restaurant_phone);
 
     try {
       const res = await fetch("https://ringhost-onboard.s0533495227.workers.dev", {
