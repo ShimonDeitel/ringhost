@@ -15,11 +15,20 @@
   input, textarea, select { width: 100%; padding: 0.7rem 0.9rem; border: 1px solid var(--line); border-radius: 8px; font-size: 1rem; font-family: inherit; }
   textarea { resize: vertical; min-height: 60px; }
   button { margin-top: 1.5rem; width: 100%; background: var(--ink); color: white; border: none; padding: 0.9rem; border-radius: 8px; font-size: 1.05rem; font-weight: 600; cursor: pointer; }
+  button.secondary { margin-top: 0.5rem; background: white; color: var(--ink); border: 1px solid var(--line); }
   button:disabled { opacity: 0.6; cursor: default; }
   .result { margin-top: 1.5rem; padding: 1.2rem; border-radius: 8px; background: white; border: 1px solid var(--line); display: none; }
   .result.show { display: block; }
   .result .phone { font-size: 1.6rem; font-weight: 700; color: var(--amber); }
+  .result a { display: inline-block; margin-top: 0.6rem; font-size: 0.9rem; }
   .error { color: #b3261e; margin-top: 1rem; }
+  .maps-row { display: flex; gap: 0.5rem; }
+  .maps-row input { flex: 1; }
+  .maps-row button { margin-top: 0; width: auto; padding: 0 1rem; }
+  .lang-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .lang-group label { display: flex; align-items: center; gap: 0.4rem; font-weight: 400; margin: 0; }
+  .lang-group input { width: auto; }
+  .hint { color: #999; font-size: 0.8rem; margin-top: 0.3rem; }
 </style>
 </head>
 <body>
@@ -27,18 +36,27 @@
   <h1>Set up a new restaurant</h1>
   <p class="sub">Fill this in once — you get back a real, working phone number for that restaurant.</p>
 
+  <label>Google Maps lookup (optional)</label>
+  <div class="maps-row">
+    <input id="maps_query" placeholder="Restaurant name + city, e.g. &quot;Ishtabach Jerusalem&quot;">
+  </div>
+  <p class="hint">Fills in name, phone, and hours automatically where possible. Falls back to the manual fields below if it can't find a match.</p>
+
   <form id="f">
     <label>Restaurant name</label>
-    <input name="restaurant_name" required>
+    <input name="restaurant_name">
 
     <label>City</label>
     <input name="city">
 
-    <label>Language</label>
-    <select name="language">
-      <option value="he">Hebrew</option>
-      <option value="en">English</option>
-    </select>
+    <label>Languages the AI should support (caller picks at the start of the call)</label>
+    <div class="lang-group">
+      <label><input type="checkbox" name="languages" value="he" checked> Hebrew</label>
+      <label><input type="checkbox" name="languages" value="en" checked> English</label>
+      <label><input type="checkbox" name="languages" value="ar"> Arabic</label>
+      <label><input type="checkbox" name="languages" value="ru"> Russian</label>
+    </div>
+    <p class="hint">The first language checked sets the AI's voice — the other languages are handled by the same voice engine, so pronunciation quality is best in that first one.</p>
 
     <label>Cuisine</label>
     <input name="cuisine" placeholder="e.g. Italian, Middle Eastern">
@@ -49,7 +67,10 @@
     <label>Menu highlights</label>
     <textarea name="menu_highlights" placeholder="A few signature dishes"></textarea>
 
-    <label>Your phone (where booking/escalation notifications reference)</label>
+    <label>Restaurant's own phone (for reference/records)</label>
+    <input name="restaurant_phone" placeholder="+972...">
+
+    <label>Your phone (shown on the dashboard as the contact)</label>
     <input name="owner_phone" placeholder="+972501234567" required>
 
     <button type="submit">Create the assistant</button>
@@ -61,6 +82,7 @@
     <div>Live number:</div>
     <div class="phone" id="phone"></div>
     <div style="margin-top:0.8rem; color:#666; font-size:0.9rem;" id="note"></div>
+    <a id="dashboard-link" href="#" target="_blank">Open the bookings dashboard →</a>
   </div>
 </div>
 
@@ -70,15 +92,21 @@
   const phoneEl = document.getElementById("phone");
   const noteEl = document.getElementById("note");
   const errEl = document.getElementById("err");
+  const dashLink = document.getElementById("dashboard-link");
+  const mapsQueryEl = document.getElementById("maps_query");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     errEl.textContent = "";
     result.classList.remove("show");
-    const button = form.querySelector("button");
+    const button = form.querySelector("button[type=submit]");
     button.disabled = true;
     button.textContent = "Setting up...";
+
     const data = Object.fromEntries(new FormData(form).entries());
+    data.languages = Array.from(form.querySelectorAll('input[name="languages"]:checked')).map(c => c.value);
+    if (mapsQueryEl.value.trim()) data.google_maps_query = mapsQueryEl.value.trim();
+
     try {
       const res = await fetch("https://ringhost-onboard.s0533495227.workers.dev", {
         method: "POST",
@@ -88,7 +116,10 @@
       const json = await res.json();
       if (!res.ok || json.error) throw new Error(json.error || "Setup failed");
       phoneEl.textContent = json.phoneNumber || "(no number yet — retry)";
-      noteEl.textContent = json.note || "Call this number now to test it.";
+      let note = json.note || "Call this number now to test it.";
+      if (json.mapsNote) note = json.mapsNote + " — " + note;
+      noteEl.textContent = note;
+      dashLink.href = json.dashboardUrl || "#";
       result.classList.add("show");
     } catch (err) {
       errEl.textContent = err.message;
