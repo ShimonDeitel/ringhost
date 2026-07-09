@@ -138,14 +138,41 @@
 
 <section id="signup">
   <h2 style="text-align:center;">Want to hear it on your own restaurant's info?</h2>
-  <form action="mailto:s0533495227@gmail.com" method="post" enctype="text/plain">
+  <form id="lead-form">
     <input type="text" name="restaurant_name" placeholder="Restaurant name" required>
     <input type="tel" name="phone" placeholder="Phone number" required>
     <input type="email" name="email" placeholder="Email" required>
     <button type="submit">Request a free sample call</button>
   </form>
-  <p style="text-align:center; color:#999; font-size:0.85rem; margin-top:1rem;">No commitment. We'll call you back with a working demo built around your restaurant.</p>
+  <p id="lead-status" style="text-align:center; color:#999; font-size:0.85rem; margin-top:1rem;">No commitment. We'll call you back with a working demo built around your restaurant.</p>
 </section>
+
+<script>
+  const form = document.getElementById("lead-form");
+  const status = document.getElementById("lead-status");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    const button = form.querySelector("button");
+    button.disabled = true;
+    button.textContent = "Sending...";
+    try {
+      const res = await fetch("https://ringhost-leads.s0533495227.workers.dev", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("request failed");
+      form.reset();
+      form.style.display = "none";
+      status.textContent = "Thanks! We'll be in touch soon with your sample call.";
+    } catch {
+      button.disabled = false;
+      button.textContent = "Request a free sample call";
+      status.textContent = "Something went wrong — please try again in a moment.";
+    }
+  });
+</script>
 
 <footer>
   RingHost — built by Shimon Deitel
